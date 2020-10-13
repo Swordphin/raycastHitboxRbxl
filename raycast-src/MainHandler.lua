@@ -13,7 +13,6 @@ local Service_Stop = function(forceStop)
 	if (HitboxesConfigured <= 0 or forceStop) and HeartbeatConnection then
 		HeartbeatConnection:Disconnect()
 		HeartbeatConnection = nil
-		print("stoppin")
 	end
 end
 
