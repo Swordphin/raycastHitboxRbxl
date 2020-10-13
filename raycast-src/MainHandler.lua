@@ -4,18 +4,16 @@ local Handler = {}
 
 local HeartbeatConnection
 local RunService = game:GetService("RunService")
-local CollectionService = game:GetService("CollectionService")
+
+local Service = script.Parent.Service
 
 --------
 
-local CastAttachment = require(script.Parent.CastLogics.CastAttachment)
-local CastVectorPoint = require(script.Parent.CastLogics.CastVectorPoint)
-local CastLinkAttachment = require(script.Parent.CastLogics.CastLinkAttachment)
-
 local Service_Stop = function(forceStop)
-	if HitboxesConfigured <= 0 or forceStop then
+	if (HitboxesConfigured <= 0 or forceStop) and HeartbeatConnection then
 		HeartbeatConnection:Disconnect()
 		HeartbeatConnection = nil
+		print("stoppin")
 	end
 end
 
@@ -27,29 +25,14 @@ local Service_Run = function()
 		for Index, Object in pairs(ActiveHitboxes) do
 			if Object.deleted then
 				Handler:remove(Index)
-				return
-			end
-			if Object.active then
-				IsActive = true
+			else
 				for _, Point in ipairs(Object.points) do
-					local rayStart
-					local rayDir
-					local RelativePointToWorld 
-					local method
-					if Point.RelativePart then
-						method = CastVectorPoint
-						rayStart, rayDir, RelativePointToWorld = method:solve(Point, Object.debugMode)
-					elseif Point.Attachment0 == nil and typeof(Point.Attachment) == "Instance" then
-						method = CastAttachment
-						rayStart, rayDir = method:solve(Point, Object.debugMode)
-					elseif Point.Attachment0 then
-						method = CastLinkAttachment
-						rayStart, rayDir = method:solve(Point, Object.debugMode)
-					end
-					
-					if rayStart then
+					if Object.active then
+						IsActive = true
+						
+						local rayStart, rayDir, RelativePointToWorld = Point.solver:solve(Point, Object.debugMode)
 						local raycastResult = workspace:Raycast(rayStart, rayDir, Object.raycastParams)
-						method:lastPosition(Point, RelativePointToWorld)
+						Point.solver:lastPosition(Point, RelativePointToWorld)
 						
 						if raycastResult then
 							local hitPart = raycastResult.Instance
@@ -69,6 +52,9 @@ local Service_Run = function()
 								end
 							end
 						end
+					else
+						Point.LastPosition = nil
+						Object.targetsHit = {}
 					end
 				end
 			end
@@ -81,7 +67,7 @@ local Service_Run = function()
 	end)
 end
 
-CollectionService:GetInstanceAddedSignal("RaycastEnabled"):Connect(function()
+Service.Event:Connect(function()
 	Service_Run()
 end)
 

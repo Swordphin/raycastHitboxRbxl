@@ -1,11 +1,15 @@
-local HitboxObject = {}
-local CollectionTag = "RaycastEnabled"
-
---------
-
 local Players = game:GetService("Players")
 local CollectionService = game:GetService("CollectionService")
 
+local CastAttachment = require(script.Parent.CastLogics.CastAttachment)
+local CastVectorPoint = require(script.Parent.CastLogics.CastVectorPoint)
+local CastLinkAttachment = require(script.Parent.CastLogics.CastLinkAttachment)
+
+local Service = script.Parent.Service --- Used for determining if the RunService should be running
+
+--------
+
+local HitboxObject = {}
 local Hitbox = {}
 Hitbox.__index = Hitbox
 
@@ -42,7 +46,7 @@ function Hitbox:SetPoints(object, vectorPoints)
 	if object and object:IsA("BasePart") then
 		for _, vectors in ipairs(vectorPoints) do
 			if typeof(vectors) == "Vector3" then
-				local Point = {RelativePart = object, Attachment = vectors, LastPosition = nil}
+				local Point = {RelativePart = object, Attachment = vectors, LastPosition = nil, solver = CastVectorPoint}
 				table.insert(self.points, Point)
 			end
 		end
@@ -70,7 +74,8 @@ function Hitbox:LinkAttachments(primaryAttachment, secondaryAttachment)
 			RelativePart = nil,
 			Attachment = primaryAttachment,
 			Attachment0 = secondaryAttachment,
-			LastPosition = nil
+			LastPosition = nil,
+			solver = CastLinkAttachment
 		}
 		table.insert(self.points, Point)
 	end
@@ -91,7 +96,7 @@ function Hitbox:seekAttachments(attachmentName, canWarn)
 	end
 	for _, attachment in ipairs(self.object:GetDescendants()) do
 		if attachment:IsA("Attachment") and attachment.Name == attachmentName then
-			local Point = {Attachment = attachment, RelativePart = nil, LastPosition = nil}
+			local Point = {Attachment = attachment, RelativePart = nil, LastPosition = nil, solver = CastAttachment}
 			table.insert(self.points, Point)
 		end
 	end
@@ -108,25 +113,22 @@ end
 function Hitbox:cleanup()
 	if self.deleted then return end
 	
-	CollectionService:RemoveTag(self.object, CollectionTag)
 	self.bindable:Destroy()
 	self.OnHit = nil
 	self.points = nil
 	self.active = false
 	self.deleted = true
+	Service:Fire()
 end
 
 function Hitbox:HitStart()
-	CollectionService:AddTag(self.object, CollectionTag)
+	if self.deleted then return end
+	
 	self.active = true
+	Service:Fire()
 end
 
 function Hitbox:HitStop()
-	CollectionService:RemoveTag(self.object, CollectionTag)
-	for _, Point in ipairs(self.points) do
-		Point.LastPosition = nil
-	end
-	self.targetsHit = {}
 	self.active = false
 end
 
