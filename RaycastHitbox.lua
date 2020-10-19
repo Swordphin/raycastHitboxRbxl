@@ -125,56 +125,13 @@ ________________________________________________________________________________
 		
 ____________________________________________________________________________________________________________________________________________________________________________
 
-	[ Troubleshooting ]
-	
-	Q1 - Rays are not coming out / DebugRays not showing any rays
-			--- Make sure you initialized an instance and that it contains parts. These parts should contain attachments
-				named after the AttachmentName variable below.
-			--- Pay attention to what the output says.
-				
-	Q2 - Sometimes my rays "lag" or they do not come out soon enough
-			--- This is a known issue and I've been actively trying to investigate the cause of it. Though it doesn't really happen often enough to be a concern.
-			
-	Q3 - Why do I deal more and more damage the more times I hit my humanoid enemy?
-			--- You should always disconnect your OnHit events every time you are done using them (preferably alongside HitStop). Here is a barebones example, 
-				it's using a loop but you should also take care when doing it in functions or server/client events since it's the same.
-			
-			BAD:
-				while true do
-					Hitbox:HitStart()
-					Hitbox.OnHit:Connect(function(hit, humanoid)	--- This connection line will not be garbage collected, and will continue to up the damage by 10 per 3 seconds
-						humanoid:TakeDamage(10)
-					end)
-					wait(3)
-					Hitbox:HitStop()
-				end
-			
-			GOOD:
-				while true do
-					Hitbox:HitStart()
-					
-					local MyHitboxConnection
-					MyHitboxConnection = Hitbox.OnHit:Connect(function(hit, humanoid)	--- Save it to a variable
-						humanoid:TakeDamage(10)
-					end)
-					
-					wait(3)
-					Hitbox:HitStop()
-					
-					MyHitboxConnection:Disconnect()		--- Disconnects it when we are done with it
-				end
-____________________________________________________________________________________________________________________________________________________________________________
-
-	I do not recommend editing the mayhem below unless you know what you're doing.
-____________________________________________________________________________________________________________________________________________________________________________
-
 --]]
 
 local RaycastHitbox = { 
-	Version = "2.3",
+	Version = "3.0",
 	AttachmentName = "DmgPoint",
-	DebugMode = true,
-	WarningMessage = true
+	DebugMode = false,
+	WarningMessage = false
 }
 
 --------
@@ -201,7 +158,7 @@ function RaycastHitbox:Deinitialize(object)
 end
 
 function RaycastHitbox:GetHitbox(object)
-   return Handler:check(object, RaycastHitbox.WarningMessage)
+   return Handler:check(object)
 end
 
 return RaycastHitbox
