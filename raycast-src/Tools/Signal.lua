@@ -8,10 +8,12 @@ function connection:Create()
 end
 
 function connection:Connect(Listener)
-	self[1] = self[1] or Listener
+	self[1] = Listener
 end
 
 function connection:Fire(...)
+	if not self[1] then return end 
+	
 	local newThread = coroutine.create(self[1])
 	coroutine.resume(newThread, ...)
 end

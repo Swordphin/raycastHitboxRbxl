@@ -1,5 +1,6 @@
 -- [[ Services ]]
 local Players = game:GetService("Players")
+local CollectionService = game:GetService("CollectionService")
 
 -- [[ Variables ]]
 local MAIN = script.Parent
@@ -32,16 +33,13 @@ function Hitbox:config(object, ignoreList)
 	self.points = {}
 	self.targetsHit = {}
 	self.OnHit = Signal:Create()
+	self.OnUpdate = Signal:Create()
 	self.raycastParams = RaycastParams.new()
 	self.raycastParams.FilterType = Enum.RaycastFilterType.Blacklist
 	self.raycastParams.FilterDescendantsInstances = ignoreList or {}
 	
 	self.object = object
-	self.object.AncestryChanged:Connect(function()
-		if not workspace:IsAncestorOf(self.object) and not Players:IsAncestorOf(self.object) then
-			self:cleanup()
-		end
-	end)
+	CollectionService:AddTag(self.object, "RaycastModuleManaged")
 end
 
 function Hitbox:SetPoints(object, vectorPoints, groupName)
@@ -131,9 +129,10 @@ function Hitbox:seekAttachments(attachmentName, canWarn)
 	end
 end
 
-function Hitbox:cleanup()
+function Hitbox:Destroy()
 	if self.deleted then return end
 	if self.OnHit then self.OnHit:Delete() end
+	if self.OnUpdate then self.OnUpdate:Delete() end
 	
 	self.points = nil
 	self.active = false

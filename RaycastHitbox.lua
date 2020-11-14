@@ -128,7 +128,7 @@ ________________________________________________________________________________
 --]]
 
 local RaycastHitbox = { 
-	Version = "3.0",
+	Version = "3.1",
 	AttachmentName = "DmgPoint",
 	DebugMode = false,
 	WarningMessage = false
@@ -153,7 +153,7 @@ function RaycastHitbox:Initialize(object, ignoreList)
 	return newHitbox
 end
 
-function RaycastHitbox:Deinitialize(object)
+function RaycastHitbox:Deinitialize(object) --- Deprecated
 	Handler:remove(object)
 end
 

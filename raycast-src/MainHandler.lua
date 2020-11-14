@@ -1,8 +1,9 @@
 -- [[ Services ]]
 local RunService = game:GetService("RunService")
+local CollectionService = game:GetService("CollectionService")
 
 -- [[ Constants ]]
-local SYNC_RATE = RunService:IsClient() and RunService.RenderStepped or RunService.Heartbeat
+local SYNC_RATE = RunService.Heartbeat
 local MAIN = script.Parent
 
 -- [[ Variables ]
@@ -19,7 +20,7 @@ end
 function Handler:remove(object)
 	for i in ipairs(ActiveHitboxes) do
 		if ActiveHitboxes[i].object == object then
-			ActiveHitboxes[i]:cleanup()
+			ActiveHitboxes[i]:Destroy()
 			setmetatable(ActiveHitboxes[i], nil)
 			table.remove(ActiveHitboxes, i)
 		end
@@ -33,6 +34,12 @@ function Handler:check(object)
 		end
 	end
 end
+
+function OnTagRemoved(object)
+	Handler:remove(object)
+end
+
+CollectionService:GetInstanceRemovedSignal("RaycastModuleManaged"):Connect(OnTagRemoved)
 
 
 --------
@@ -53,13 +60,15 @@ SYNC_RATE:Connect(function()
 						local hitPart = raycastResult.Instance
 						local findModel = not Object.partMode and hitPart:FindFirstAncestorOfClass("Model")
 						local humanoid = findModel and findModel:FindFirstChildOfClass("Humanoid")
-						local target = findModel or (Object.partMode and hitPart)
+						local target = humanoid or (Object.partMode and hitPart)
 
 						if target and not Object.targetsHit[target] then
 							Object.targetsHit[target] = true
 							Object.OnHit:Fire(hitPart, humanoid, raycastResult, Point.group)
 						end
 					end
+					
+					Object.OnUpdate:Fire(Point.LastPosition)
 				end
 			end
 		end
