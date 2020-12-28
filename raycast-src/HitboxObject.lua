@@ -43,12 +43,13 @@ function Hitbox:config(object, ignoreList)
 end
 
 function Hitbox:SetPoints(object, vectorPoints, groupName)
-	if object and (object:IsA("BasePart") or object:IsA("MeshPart")) then
+	if object and (object:IsA("BasePart") or object:IsA("MeshPart") or object:IsA("Attachment")) then
 		for _, vectors in ipairs(vectorPoints) do
 			if typeof(vectors) == "Vector3" then
 				local Point = {
+					IsAttachment = object:IsA("Attachment"),
 					RelativePart = object, 
-					Attachment = vectors, 
+					Attachment = vectors,
 					LastPosition = nil,
 					group = groupName,
 					solver = CastVectorPoint
@@ -147,7 +148,7 @@ function Hitbox:HitStop()
 	if self.deleted then return end
 	
 	self.active = false
-	self.targetsHit = {}
+	table.clear(self.targetsHit)
 end
 
 function Hitbox:PartMode(bool)
