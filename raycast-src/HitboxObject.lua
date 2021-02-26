@@ -10,6 +10,7 @@ local CastVectorPoint = require(MAIN.CastLogics.CastVectorPoint)
 local CastLinkAttach  = require(MAIN.CastLogics.CastLinkAttachment)
 
 local Signal = require(MAIN.Tools.Signal)
+local clock = os.clock
 
 
 --------
@@ -32,6 +33,7 @@ function Hitbox:config(object, ignoreList)
 	self.debugMode = false
 	self.points = {}
 	self.targetsHit = {}
+	self.endTime = 0
 	self.OnHit = Signal:Create()
 	self.OnUpdate = Signal:Create()
 	self.raycastParams = RaycastParams.new()
@@ -140,14 +142,27 @@ function Hitbox:Destroy()
 	self.deleted = true
 end
 
-function Hitbox:HitStart()
+function Hitbox:HitStart(seconds)
 	self.active = true
+	
+	if seconds then
+		assert(type(seconds) == "number", "Argument #1 must be a number!")
+		
+		local minSeconds = 1 / 60 --- Seconds cannot be under 1/60th
+		
+		if seconds <= minSeconds or seconds == math.huge then
+			seconds = minSeconds
+		end
+		
+		self.endTime = clock() + seconds
+	end
 end
 
 function Hitbox:HitStop()
 	if self.deleted then return end
 	
 	self.active = false
+	self.endTime = 0
 	table.clear(self.targetsHit)
 end
 

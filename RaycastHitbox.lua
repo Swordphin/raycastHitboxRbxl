@@ -105,10 +105,12 @@ ________________________________________________________________________________
 				Arguments
 					--- Instance attachment1: Attachment object
 				
-		* HitboxObject:HitStart()
+		* HitboxObject:HitStart(seconds)
 				Description
 					--- Starts drawing the rays. Will only damage the target once. Call HitStop to reset the target pool so you can damage the same targets again.
 						If HitStart hits a target(s), OnHit event will be called.
+				Arguments
+					--- number seconds: Optional numerical value, the hitbox will automatically turn off after this amount of time has elapsed
 					
 		* HitboxObject:HitStop()
 				Description
@@ -121,6 +123,10 @@ ________________________________________________________________________________
 					--- Instance part: Returns the part that the rays hit first
 					--- Instance humanoid: Returns the Humanoid object 
 					--- Instance RaycastResults: Returns information about the last raycast results
+					
+		* HitboxObject.OnUpdate:Connect(returns: Vector3 position)
+				Description
+					--- This fires every frame, for every point, returning a Vector3 value of its last position in space. Do not use expensive operations in this function.
 		
 		
 ____________________________________________________________________________________________________________________________________________________________________________
@@ -128,7 +134,7 @@ ________________________________________________________________________________
 --]]
 
 local RaycastHitbox = { 
-	Version = "3.2",
+	Version = "3.3",
 	AttachmentName = "DmgPoint",
 	DebugMode = false,
 	WarningMessage = false

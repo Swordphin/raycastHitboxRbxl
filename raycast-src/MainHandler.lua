@@ -9,6 +9,7 @@ local MAIN = script.Parent
 -- [[ Variables ]
 local ActiveHitboxes = {}
 local Handler = {}
+local clock = os.clock
 
 
 --------
@@ -65,6 +66,13 @@ SYNC_RATE:Connect(function()
 						if target and not Object.targetsHit[target] then
 							Object.targetsHit[target] = true
 							Object.OnHit:Fire(hitPart, humanoid, raycastResult, Point.group)
+						end
+					end
+					
+					if Object.endTime > 0 then
+						if Object.endTime <= clock() then
+							Object.endTime = 0
+							Object:HitStop()
 						end
 					end
 					
