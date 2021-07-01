@@ -12,13 +12,13 @@ function connection:Connect(Listener)
 end
 
 function connection:Fire(...)
-	if not self[1] then return end 
-	
+	if not self[1] then return end
+
 	local newThread = coroutine.create(self[1])
 	coroutine.resume(newThread, ...)
 end
 
-function connection:Delete()
+function connection:Destroy()
 	self[1] = nil
 end
 

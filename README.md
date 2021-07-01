@@ -1,7 +1,7 @@
 # raycastHitboxRbxl
 Requires Roblox Studio and knowledge of its API - Free to use for everybody
 
-The contents of raycast-src should be a descendant of RaycastHitbox.lua for it to work.
+Rojo-compliant.
 
 ____
 Documentation and examples can be found at
