@@ -156,7 +156,7 @@ ________________________________________________________________________________
 --]]
 
 -- Show where the red lines are going. You can change their colour and width in VisualizerCache
-local SHOW_DEBUG_RAY_LINES: boolean = false
+local SHOW_DEBUG_RAY_LINES: boolean = true
 
 -- Allow RaycastModule to write to the output
 local SHOW_OUTPUT_MESSAGES: boolean = true
