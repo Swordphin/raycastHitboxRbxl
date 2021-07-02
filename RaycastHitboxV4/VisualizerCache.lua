@@ -41,7 +41,7 @@ function cache:_CreateAdornment(): AdornmentData
 end
 
 --- Gets an AdornmentData type. Creates one if there isn't one currently available.
-function cache:GetAdornment()
+function cache:GetAdornment(): AdornmentData?
 	if #cache._AdornmentInReserve <= 0 then
 		--- Create a new LineAdornmentHandle if none are in reserve
 		local adornment: AdornmentData = cache:_CreateAdornment()

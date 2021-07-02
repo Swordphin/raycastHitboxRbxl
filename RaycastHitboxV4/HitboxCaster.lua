@@ -218,8 +218,13 @@ local function Init()
 		for i = #ActiveHitboxes, 1, -1 do
 			--- Skip this hitbox if the hitbox will be garbage collected this frame
 			if ActiveHitboxes[i].HitboxPendingRemoval then
-				setmetatable(ActiveHitboxes[i], nil)
-				table.remove(ActiveHitboxes, i)
+				local hitbox: any = table.remove(ActiveHitboxes, i)
+
+				if hitbox.HitboxObject then
+					CollectionService:RemoveTag(hitbox.HitboxObject, hitbox.Tag)
+				end
+
+				setmetatable(hitbox, nil)
 				continue
 			end
 
