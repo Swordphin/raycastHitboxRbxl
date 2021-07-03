@@ -77,6 +77,10 @@ function Hitbox:Destroy()
 	self:HitStop()
 	self.OnHit:Destroy()
 	self.OnUpdate:Destroy()
+
+	if self.HitboxObject then
+		CollectionService:RemoveTag(self.HitboxObject, self.Tag)
+	end
 end
 
 --- Searches for attachments for the given instance (if applicable)
@@ -219,11 +223,6 @@ local function Init()
 			--- Skip this hitbox if the hitbox will be garbage collected this frame
 			if ActiveHitboxes[i].HitboxPendingRemoval then
 				local hitbox: any = table.remove(ActiveHitboxes, i)
-
-				if hitbox.HitboxObject then
-					CollectionService:RemoveTag(hitbox.HitboxObject, hitbox.Tag)
-				end
-
 				setmetatable(hitbox, nil)
 				continue
 			end
