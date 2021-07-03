@@ -74,13 +74,14 @@ end
 --- Queues the hitbox to be destroyed in the next frame
 function Hitbox:Destroy()
 	self.HitboxPendingRemoval = true
-	self:HitStop()
-	self.OnHit:Destroy()
-	self.OnUpdate:Destroy()
 
 	if self.HitboxObject then
 		CollectionService:RemoveTag(self.HitboxObject, self.Tag)
 	end
+
+	self:HitStop()
+	self.OnHit:Destroy()
+	self.OnUpdate:Destroy()
 end
 
 --- Searches for attachments for the given instance (if applicable)
@@ -105,7 +106,7 @@ function Hitbox:Recalibrate()
 	if self.DebugLog then
 		print(string.format("%s%s", DEFAULT_DEBUG_LOGGER_PREFIX,
 			attachmentCount > 0 and string.format(DEFAULT_ATTACH_COUNT_NOTICE, attachmentCount, self.HitboxObject.Name) or
-			string.format(DEFAULT_MISSING_ATTACHMENTS, self.HitboxObject.Name))
+				string.format(DEFAULT_MISSING_ATTACHMENTS, self.HitboxObject.Name))
 		)
 	end
 end
