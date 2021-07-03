@@ -1,0 +1,15 @@
+{
+	"name": "RCHBV4-SimpleInstall",
+	"tree": {
+		"$className": "DataModel",
+
+		"ReplicatedStorage": {
+			"$className": "ReplicatedStorage",
+			"$ignoreUnknownInstances": true,
+
+			"RaycastHitboxV4": {
+				"$path": "lib"
+			}
+		}
+	}
+}
