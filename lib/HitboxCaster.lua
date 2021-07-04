@@ -288,7 +288,6 @@ local function Init()
 				--- Hitbox Time scheduler
 				if ActiveHitboxes[i].HitboxStopTime > 0 then
 					if ActiveHitboxes[i].HitboxStopTime <= os.clock() then
-						ActiveHitboxes[i].HitboxStopTime = 0
 						ActiveHitboxes[i]:HitStop()
 					end
 				end
