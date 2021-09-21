@@ -82,12 +82,21 @@ function Hitbox:Destroy()
 	self:HitStop()
 	self.OnHit:Destroy()
 	self.OnUpdate:Destroy()
+	self.HitboxRaycastPoints = nil
+	self.HitboxObject = nil
 end
 
 --- Searches for attachments for the given instance (if applicable)
 function Hitbox:Recalibrate()
 	local descendants: {[number]: Instance} = self.HitboxObject:GetDescendants()
 	local attachmentCount: number = 0
+
+	--- Remove all previous attachments
+	for i = #self.HitboxRaycastPoints, 1, -1 do
+		if self.HitboxRaycastPoints[i].CastMode == Hitbox.CastModes.Attachment then
+			table.remove(self.HitboxRaycastPoints, i)
+		end
+	end
 
 	for _, attachment: any in ipairs(descendants) do
 		if not attachment:IsA("Attachment") or attachment.Name ~= DEFAULT_ATTACHMENT_INSTANCE then
@@ -187,7 +196,7 @@ end
 -- @param instance object
 function Hitbox:_FindHitbox(object: any)
 	for _: number, hitbox: any in ipairs(ActiveHitboxes) do
-		if hitbox.HitboxObject == object then
+		if not hitbox.HitboxPendingRemoval and hitbox.HitboxObject == object then
 			return hitbox
 		end
 	end
@@ -224,6 +233,7 @@ local function Init()
 			--- Skip this hitbox if the hitbox will be garbage collected this frame
 			if ActiveHitboxes[i].HitboxPendingRemoval then
 				local hitbox: any = table.remove(ActiveHitboxes, i)
+				table.clear(hitbox)
 				setmetatable(hitbox, nil)
 				continue
 			end
@@ -294,6 +304,12 @@ local function Init()
 
 				--- OnUpdate event that fires every frame for every point
 				ActiveHitboxes[i].OnUpdate:Fire(point.LastPosition)
+
+				--- Update SignalType
+				if ActiveHitboxes[i].OnUpdate._signalType ~= ActiveHitboxes[i].SignalType then
+					ActiveHitboxes[i].OnUpdate._signalType = ActiveHitboxes[i].SignalType
+					ActiveHitboxes[i].OnHit._signalType = ActiveHitboxes[i].SignalType
+				end
 			end
 		end
 

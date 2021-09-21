@@ -167,7 +167,7 @@ local DEFAULT_COLLECTION_TAG_NAME: string = "_RaycastHitboxV4Managed"
 --- Initialize required modules
 local CollectionService: CollectionService = game:GetService("CollectionService")
 local HitboxData = require(script.HitboxCaster)
-local Signal = require(script.Signal)
+local Signal = require(script.GoodSignal)
 
 local RaycastHitbox = {}
 RaycastHitbox.__index = RaycastHitbox
@@ -178,6 +178,12 @@ RaycastHitbox.DetectionMode = {
 	Default = 1,
 	PartMode = 2,
 	Bypass = 3,
+}
+
+-- Signal Type enums
+RaycastHitbox.SignalType = {
+	Default = 1,
+	Single = 2, --- Defaults to Single connections only for legacy purposes
 }
 
 --- Creates or finds a hitbox object. Returns an hitbox object
@@ -199,8 +205,9 @@ function RaycastHitbox.new(object: any?)
 			HitboxActive = false,
 			Visualizer = SHOW_DEBUG_RAY_LINES,
 			DebugLog = SHOW_OUTPUT_MESSAGES,
-			OnUpdate = Signal:Create(),
-			OnHit = Signal:Create(),
+			SignalType = RaycastHitbox.SignalType.Single,
+			OnUpdate = Signal.new(RaycastHitbox.SignalType.Single),
+			OnHit = Signal.new(RaycastHitbox.SignalType.Single),
 			Tag = DEFAULT_COLLECTION_TAG_NAME,
 		}, HitboxData)
 
