@@ -19,7 +19,7 @@ function solver:Solve(point: {[string]: any}): (Vector3, Vector3)
 		point.LastPosition = pointToWorldSpace
 	end
 
-	local origin: Vector3 = point.LastPosition
+	local origin: Vector3 = pointToWorldSpace
 	local direction: Vector3 = pointToWorldSpace - (point.LastPosition or EMPTY_VECTOR)
 
 	point.WorldSpace = pointToWorldSpace
