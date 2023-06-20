@@ -13,6 +13,7 @@ local DEFAULT_DEBUGGER_RAY_DURATION: number = 0.25
 local DEFAULT_DEBUG_LOGGER_PREFIX: string = "[ Raycast Hitbox V4 ]\n"
 local DEFAULT_MISSING_ATTACHMENTS: string = "No attachments found in object: %s. Can be safely ignored if using SetPoints."
 local DEFAULT_ATTACH_COUNT_NOTICE: string = "%s attachments found in object: %s."
+local DEFAULT_INVALID_SHAPECAST_MODE: string = "Invalid Shapecast Mode: %s"
 
 -- Hitbox values
 local MINIMUM_SECONDS_SCHEDULER: number = 1 / 60
@@ -248,16 +249,35 @@ local function Init()
 				--- Calculate rays
 				local castMode: any = solversCache[point.CastMode]
 				local origin: Vector3, direction: Vector3 = castMode:Solve(point)
-				local raycastResult: RaycastResult = workspace:Raycast(origin, direction, ActiveHitboxes[i].RaycastParams)
+				local raycastResult: RaycastResult
+				if ActiveHitboxes[i]._ShapecastMode == 1 then
+					raycastResult = workspace:Raycast(origin, direction, ActiveHitboxes[i].RaycastParams)
+				elseif ActiveHitboxes[i]._ShapecastMode == 2 then
+					local sphereCastRadius: number = ActiveHitboxes[i].SphereCastRadius
+					raycastResult = workspace:Spherecast(origin, sphereCastRadius, direction, ActiveHitboxes[i].RaycastParams)
+				elseif ActiveHitboxes[i]._ShapecastMode == 3 then
+					local blockCastSize: Vector3 = ActiveHitboxes[i].BlockCastSize
+					raycastResult = workspace:Blockcast(CFrame.new(origin), blockCastSize, direction, ActiveHitboxes[i].RaycastParams)
+				else
+					error(string.format(DEFAULT_INVALID_SHAPECAST_MODE, ActiveHitboxes[i]._ShapecastMode))
+				end
 
 				--- Draw debug rays
 				if ActiveHitboxes[i].Visualizer then
-					local adornmentData: AdornmentData? = VisualizerCache:GetAdornment()
+					local adornmentData: AdornmentData? = VisualizerCache:GetAdornment(ActiveHitboxes[i]._ShapecastMode)
 
 					if adornmentData then
 						local debugStartPosition: CFrame = castMode:Visualize(point)
-						adornmentData.Adornment.Length = direction.Magnitude
 						adornmentData.Adornment.CFrame = debugStartPosition
+
+						if ActiveHitboxes[i]._ShapecastMode == 1 then
+							adornmentData.Adornment.Length = direction.Magnitude
+						elseif ActiveHitboxes[i]._ShapecastMode == 2 then
+							adornmentData.Adornment.Radius = ActiveHitboxes[i].SphereCastRadius
+							adornmentData.Adornment.Height = direction.Magnitude
+						elseif ActiveHitboxes[i]._ShapecastMode == 3 then
+							adornmentData.Adornment.Size = ActiveHitboxes[i].BlockCastSize
+						end
 					end
 				end
 
@@ -313,16 +333,18 @@ local function Init()
 			end
 		end
 
-		local adornmentsInUse: number = #VisualizerCache._AdornmentInUse
+		for _, reserveCache in VisualizerCache._AdornmentInUse do
+			local adornmentsInUse: number = #reserveCache
 
-		--- Iterates through all the debug rays to see if they need to be cached or cleaned up
-		if adornmentsInUse > 0 then
-			for i = adornmentsInUse, 1, -1 do
-				if (os.clock() - VisualizerCache._AdornmentInUse[i].LastUse) >= DEFAULT_DEBUGGER_RAY_DURATION then
-					local adornment: AdornmentData? = table.remove(VisualizerCache._AdornmentInUse, i)
+			--- Iterates through all the debug rays to see if they need to be cached or cleaned up
+			if adornmentsInUse > 0 then
+				for i = adornmentsInUse, 1, -1 do
+					if (os.clock() - reserveCache[i].LastUse) >= DEFAULT_DEBUGGER_RAY_DURATION then
+						local adornment: AdornmentData? = table.remove(reserveCache, i)
 
-					if adornment then
-						VisualizerCache:ReturnAdornment(adornment)
+						if adornment then
+							VisualizerCache:ReturnAdornment(adornment)
+						end
 					end
 				end
 			end
