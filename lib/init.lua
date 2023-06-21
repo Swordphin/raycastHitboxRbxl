@@ -40,12 +40,13 @@ ________________________________________________________________________________
 
 			[ FUNCTIONS ]
 
-		* RaycastHitbox.new(Instance model | BasePart | nil)
+		* RaycastHitbox.new(Instance model | BasePart | nil, ShapecastMode number [1 - 3])
 				Description
 					--- Preps the model and recursively finds attachments in it so it knows where to shoot rays out of later. If a hitbox exists for this
 					--- object already, it simply returns the same hitbox.
 				Arguments
 					--- Instance:  (Like your character, a sword model, etc). Can be left nil in case you want an empty Hitbox or use SetPoints later
+					--- ShapecastMode:  Defaults to 1. Refer to ShapecastMode subsection below for more information
 				Returns
 					Instance HitboxObject
 						
@@ -130,7 +131,27 @@ ________________________________________________________________________________
 				Description
 					--- Defaults to 1. Refer to DetectionMode subsection below for more information
 
-			
+
+			[ SHAPECAST MODES ]
+
+		* RaycastHitbox.ShapecastMode.Line
+				Description
+					--- The classic Raycast method.
+					--- Casts a single line.
+
+		* RaycastHitbox.ShapecastMode.Sphere
+				Description
+					--- Uses the SphereCast method.
+					--- Casts a circle.
+					--- Hitbox.SphereCastRadius is used to set the radius for the SphereCast.
+
+		* RaycastHitbox.ShapecastMode.Block
+				Description
+					--- Uses the BlockCast method
+					--- Casts a cuboid.
+					--- Hitbox.BlockCastSize is used to set the radius for the BlockCast.
+		
+
 			[ DETECTION MODES ]
 
 		* RaycastHitbox.DetectionMode.Default
@@ -150,7 +171,6 @@ ________________________________________________________________________________
 					--- Similar to PartMode, the hitbox will return every hit part. Except, it will keep returning parts even if it has already hit them.
 					--- Warning: If you have multiple raycast or attachment points, each raycast will also call OnHit. Allows you to create your own
 					--- filter system.
-		
 ____________________________________________________________________________________________________________________________________________________________________________
 
 --]]
@@ -186,9 +206,16 @@ RaycastHitbox.SignalType = {
 	Single = 2, --- Defaults to Single connections only for legacy purposes
 }
 
+-- Shapecast mode enums
+RaycastHitbox.ShapecastMode = {
+	Line = 1,
+	Sphere = 2,
+	Block = 3,
+}
+
 --- Creates or finds a hitbox object. Returns an hitbox object
 -- @param required object parameter that takes in either a part or a model
-function RaycastHitbox.new(object: any?)
+function RaycastHitbox.new(object: any?, ShapecastMode: number?)
 	local hitbox: any
 
 	if object and CollectionService:HasTag(object, DEFAULT_COLLECTION_TAG_NAME) then
@@ -197,6 +224,11 @@ function RaycastHitbox.new(object: any?)
 		hitbox = setmetatable({
 			RaycastParams = nil,
 			DetectionMode = RaycastHitbox.DetectionMode.Default,
+			
+			_ShapecastMode = ShapecastMode or 1,
+			SphereCastRadius = 0,
+			BlockCastSize = Vector3.new(),
+
 			HitboxRaycastPoints = {},
 			HitboxPendingRemoval = false,
 			HitboxStopTime = 0,
