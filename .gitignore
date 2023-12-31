@@ -1,2 +1,6 @@
 # VS Code configuration
 .vscode
+
+# OS
+
+.DS_Store
