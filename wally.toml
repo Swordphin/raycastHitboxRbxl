@@ -1,7 +1,8 @@
 [package]
-name = "maxime/raycast-hitbox"
-version = "0.1.0"
+name = "zoykad/raycast-hitbox"
+description = "Fork from https://github.com/Swordphin/raycastHitboxRbxl. Source code on https://github.com/ZoyKad/raycast-hitbox/. This fork adds client and server separation so you can create hitbox on the same part on both sides."
+version = "4.1.1"
+license = "MIT"
+authors = ["ulferno", "zoykad"]
 registry = "https://github.com/UpliftGames/wally-index"
 realm = "shared"
-
-[dependencies]
