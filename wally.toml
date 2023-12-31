@@ -1,5 +1,5 @@
 [package]
-name = "zoykad/raycast-hitbox"
+name = "zoykad/raycasthitbox"
 description = "Fork from https://github.com/Swordphin/raycastHitboxRbxl. Source code on https://github.com/ZoyKad/raycast-hitbox/. This fork adds client and server separation so you can create hitbox on the same part on both sides."
 version = "4.1.1"
 license = "MIT"
