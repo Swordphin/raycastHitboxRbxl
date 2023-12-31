@@ -227,7 +227,7 @@ local function Init()
 	--- Reserve table sizing for solver tables
 	local solversCache: {[number]: any} = table.create(#Solvers:GetChildren())
 
-	DEFAULT_SIMULATION_TYPE:Connect(function(step: number)
+	DEFAULT_SIMULATION_TYPE:Connect(function(_: number)
 		--- Iterate through all the hitboxes
 		for i = #ActiveHitboxes, 1, -1 do
 			--- Skip this hitbox if the hitbox will be garbage collected this frame
