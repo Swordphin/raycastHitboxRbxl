@@ -3,6 +3,7 @@ name = "Swordphin/raycast-hitbox"
 version = "4.0.1"
 realm = "shared"
 registry = "https://github.com/UpliftGames/wally-index"
+licence = "MIT"
 
 description = "raycast-hitbox is a hit detection system that utilizes Roblox's Raycasting APIs."
 
