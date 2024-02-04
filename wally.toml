@@ -1,0 +1,18 @@
+[package]
+name = "Swordphin/raycast-hitbox"
+version = "4.0.1"
+realm = "shared"
+registry = "https://github.com/UpliftGames/wally-index"
+licence = "MIT"
+authors = ["Swordphin"]
+
+description = "raycast-hitbox is a hit detection system that utilizes Roblox's Raycasting APIs."
+
+exclude = ["**"]
+include = ["lib", "lib/*", "default.project.json", "wally.toml", "LICENSE"]
+
+[dependencies]
+
+[server-dependencies]
+
+[dev-dependencies]
